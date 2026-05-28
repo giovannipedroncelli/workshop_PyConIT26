@@ -73,17 +73,17 @@ You should see: `All systems go! The Mystery Machine is running.`
 
 ## Workshop Schedule (120 min)
 
-| Exercise | Topic                                  |
-|-------------|----------|----------------------------------------|
-|  —        | Introduction & Setup                   |
-| Ex 1     | Build a TCP Port Scanner               |
-|  Ex 2     | Banner Grabbing & Service Fingerprint  |
-| Ex 3     | FTP Explorer                           |
-|  Ex 4     | HTTP Detective                         |
-| Ex 5     | DNS Digger                             |
-|  Ex 6     | Custom Protocol Hacker |
-| Ex 7     | Admin Gate — Final Challenge           |
-|  —        | Wrap-up & Bonus (Ex 8)                 |
+| Exercise | Topic |
+| --- | --- |
+| - | Introduction & Setup |
+| Ex 1 | Build a TCP Port Scanner |
+| Ex 2 | Banner Grabbing & Service Fingerprint |
+| Ex 3 | FTP Explorer |
+| Ex 4 | HTTP Detective |
+| Ex 5 | DNS Digger |
+| Ex 6 | Custom Protocol Hacker |
+| Ex 7 | Admin Gate - Final Challenge |
+| - | Wrap-up & Bonus (Ex 8) |
 
 ---
 
