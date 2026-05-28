@@ -1,0 +1,8 @@
+# Workshop exercise dependencies
+pwntools>=4.12
+dnspython>=2.5
+requests>=2.31
+
+# Mystery Machine server (only needed for Option B — local Python)
+pyftpdlib>=1.5
+dnslib>=0.9
