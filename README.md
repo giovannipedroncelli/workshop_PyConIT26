@@ -73,18 +73,17 @@ You should see: `All systems go! The Mystery Machine is running.`
 
 ## Workshop Schedule (120 min)
 
-| Time        | Exercise | Topic                                  |
+| Exercise | Topic                                  |
 |-------------|----------|----------------------------------------|
-| 0:00–0:10   | —        | Introduction & Setup                   |
-| 0:10–0:25   | Ex 1     | Build a TCP Port Scanner               |
-| 0:25–0:40   | Ex 2     | Banner Grabbing & Service Fingerprint  |
-| 0:40–0:55   | Ex 3     | FTP Explorer                           |
-| 0:55–1:05   | —        | Break                                  |
-| 1:05–1:20   | Ex 4     | HTTP Detective                         |
-| 1:20–1:30   | Ex 5     | DNS Digger                             |
-| 1:30–1:45   | Ex 6     | Custom Protocol Hacker (intro pwntools)|
-| 1:45–1:55   | Ex 7     | Admin Gate — Final Challenge           |
-| 1:55–2:00   | —        | Wrap-up & Bonus (Ex 8)                 |
+|  —        | Introduction & Setup                   |
+| Ex 1     | Build a TCP Port Scanner               |
+|  Ex 2     | Banner Grabbing & Service Fingerprint  |
+| Ex 3     | FTP Explorer                           |
+|  Ex 4     | HTTP Detective                         |
+| Ex 5     | DNS Digger                             |
+|  Ex 6     | Custom Protocol Hacker |
+| Ex 7     | Admin Gate — Final Challenge           |
+|  —        | Wrap-up & Bonus (Ex 8)                 |
 
 ---
 
@@ -108,4 +107,4 @@ participant-kit/
 ```
 
 > **No solutions folder** — the point is to discover and build everything yourself!
-> If you get stuck, ask the instructor for hints.
+> If you get stuck, ask me for hints.
