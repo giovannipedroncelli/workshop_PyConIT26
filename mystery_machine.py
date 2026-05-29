@@ -288,9 +288,9 @@ def main():
     with zipfile.ZipFile(io.BytesIO(archive)) as zf:
         zf.extractall(tmpdir)
 
-    # Make Exercise 3 hint meaningful:
-    # only the newest audit file should be smaller than 80 bytes.
-    # Then assign distinct mtimes so MDTM can identify the newest file.
+    # Make Exercise 3 hint require BOTH conditions:
+    # - there are two equally newest audit files (same MDTM)
+    # - only one of those newest files is smaller than 80 bytes
     audit_paths = []
     for root, _, files in os.walk(tmpdir):
         for filename in files:
@@ -298,17 +298,30 @@ def main():
                 audit_paths.append(os.path.join(root, filename))
 
     sorted_audit_paths = sorted(audit_paths)
-    for file_path in sorted_audit_paths[:-1]:
-        current_size = os.path.getsize(file_path)
-        if current_size < 96:
-            with open(file_path, "ab") as fp:
-                fp.write(b"#" * (96 - current_size))
-
     now = int(time.time())
-    for index, file_path in enumerate(sorted_audit_paths):
-        # Stagger by 5 minutes per file; newest file has the largest timestamp.
-        mtime = now - (len(sorted_audit_paths) - 1 - index) * 300
-        os.utime(file_path, (mtime, mtime))
+
+    if len(sorted_audit_paths) >= 2:
+        newest_target = sorted_audit_paths[-1]
+        newest_decoy = sorted_audit_paths[-2]
+
+        # Ensure the newest decoy is NOT < 80 bytes.
+        decoy_size = os.path.getsize(newest_decoy)
+        if decoy_size < 96:
+            with open(newest_decoy, "ab") as fp:
+                fp.write(b"#" * (96 - decoy_size))
+
+        # Older audit files keep distinct older mtimes.
+        for index, file_path in enumerate(sorted_audit_paths[:-2]):
+            mtime = now - (len(sorted_audit_paths) - 1 - index) * 300
+            os.utime(file_path, (mtime, mtime))
+
+        # Two newest files share the same latest mtime (newest condition alone is ambiguous).
+        os.utime(newest_decoy, (now, now))
+        os.utime(newest_target, (now, now))
+    else:
+        for index, file_path in enumerate(sorted_audit_paths):
+            mtime = now - (len(sorted_audit_paths) - 1 - index) * 300
+            os.utime(file_path, (mtime, mtime))
 
     os.chdir(tmpdir)
     services_dir = os.path.join(tmpdir, "services")
