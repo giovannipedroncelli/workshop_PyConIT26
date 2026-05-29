@@ -288,6 +288,20 @@ def main():
     with zipfile.ZipFile(io.BytesIO(archive)) as zf:
         zf.extractall(tmpdir)
 
+    # Give FTP audit files distinct mtimes so MDTM is meaningful in Exercise 3.
+    # This preserves file contents and only adjusts modification timestamps.
+    now = int(time.time())
+    audit_paths = []
+    for root, _, files in os.walk(tmpdir):
+        for filename in files:
+            if filename.lower().startswith("audit_"):
+                audit_paths.append(os.path.join(root, filename))
+
+    for index, file_path in enumerate(sorted(audit_paths)):
+        # Stagger by 5 minutes per file; newest file has the largest timestamp.
+        mtime = now - (len(audit_paths) - 1 - index) * 300
+        os.utime(file_path, (mtime, mtime))
+
     os.chdir(tmpdir)
     services_dir = os.path.join(tmpdir, "services")
     sys.path.insert(0, services_dir)
