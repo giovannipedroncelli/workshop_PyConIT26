@@ -288,9 +288,10 @@ def main():
     with zipfile.ZipFile(io.BytesIO(archive)) as zf:
         zf.extractall(tmpdir)
 
-    # Make Exercise 3 hint require BOTH conditions:
-    # - there are two equally newest audit files (same MDTM)
-    # - only one of those newest files is smaller than 80 bytes
+    # Shape FTP audit metadata for Exercise 3.
+    # Required layout (explicit):
+    # - audit_2026-05-19.txt is the newest
+    # - audit_2026-05-22.txt has same timestamp as audit_2026-05-15.txt
     audit_paths = []
     for root, _, files in os.walk(tmpdir):
         for filename in files:
@@ -302,25 +303,29 @@ def main():
     base_sec = (int(time.time()) // 60) * 60
     base_ns = base_sec * 1_000_000_000
 
-    if len(sorted_audit_paths) >= 2:
-        newest_target = sorted_audit_paths[-1]
-        newest_decoy = sorted_audit_paths[-2]
+    audit_by_name = {os.path.basename(path): path for path in sorted_audit_paths}
+    wanted_names = {
+        "audit_2026-05-15.txt",
+        "audit_2026-05-19.txt",
+        "audit_2026-05-22.txt",
+    }
+
+    if wanted_names.issubset(audit_by_name):
+        newest_name = "audit_2026-05-19.txt"
+        paired_time_names = ["audit_2026-05-15.txt", "audit_2026-05-22.txt"]
+        older_ns = base_ns - (10 * 60 * 1_000_000_000)
 
         # Ensure the newest decoy is NOT < 80 bytes.
-        decoy_size = os.path.getsize(newest_decoy)
-        if decoy_size < 96:
-            with open(newest_decoy, "ab") as fp:
-                fp.write(b"#" * (96 - decoy_size))
+        newest_path = audit_by_name[newest_name]
+        newest_size = os.path.getsize(newest_path)
+        if newest_size < 96:
+            with open(newest_path, "ab") as fp:
+                fp.write(b"#" * (96 - newest_size))
 
-        # Older audit files keep distinct older mtimes.
-        for index, file_path in enumerate(sorted_audit_paths[:-2]):
-            shift_sec = (len(sorted_audit_paths) - 1 - index) * 300
-            mtime_ns = base_ns - (shift_sec * 1_000_000_000)
-            os.utime(file_path, ns=(mtime_ns, mtime_ns))
-
-        # Two newest files share the same latest mtime (newest condition alone is ambiguous).
-        os.utime(newest_decoy, ns=(base_ns, base_ns))
-        os.utime(newest_target, ns=(base_ns, base_ns))
+        os.utime(newest_path, ns=(base_ns, base_ns))
+        for name in paired_time_names:
+            file_path = audit_by_name[name]
+            os.utime(file_path, ns=(older_ns, older_ns))
     else:
         for index, file_path in enumerate(sorted_audit_paths):
             shift_sec = (len(sorted_audit_paths) - 1 - index) * 300
