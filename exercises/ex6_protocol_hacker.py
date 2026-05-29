@@ -57,35 +57,26 @@ def interact_with_service(host: str, port: int) -> str | None:
 
     # STEP 1: Connect to the service
     # TODO: Use pwntools remote() to connect
-    # r = remote(host, port)
 
     # STEP 2: Read the banner
     # TODO: Read until you see the prompt "MysteryNet> "
 
     # STEP 3: Send HELP to learn the commands
-    # TODO: r.sendline(b"HELP")
     # TODO: Read and print the response
 
     # STEP 4: Request a CHALLENGE
-    # TODO: r.sendline(b"CHALLENGE")
     # TODO: Read the response — it contains a Base64 string
 
-    # STEP 5: Decode the Base64 challenge
-    # TODO: Extract the Base64 string from the response
-    # TODO: Decode it: decoded = base64.b64decode(b64_string).decode()
+    # STEP 5: Decode the challenge
     # TODO: Print both the encoded and decoded values
 
     # STEP 6: Send the answer
-    # TODO: r.sendline(f"ANSWER {decoded}".encode())
     # TODO: Read and verify the response says "Correct"
 
     # STEP 7: Request the SECRET
-    # TODO: r.sendline(b"SECRET")
     # TODO: Read the response and extract the secret
 
-    # STEP 8: Clean up
-    # TODO: r.sendline(b"QUIT")
-    # TODO: r.close()
+    # STEP 8: Quit and Close
 
     pass  # Remove when you implement
 
