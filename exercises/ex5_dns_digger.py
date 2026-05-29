@@ -32,7 +32,7 @@ import re
 
 TARGET = "127.0.0.1"
 DNS_PORT = None  # TODO: Fill in the DNS port you discovered
-START_DOMAIN = "mystery.local"
+START_DOMAIN = None # TODO: Fill in the domain from the previous exercise
 
 def query_dns(server: str, port: int, domain: str, rdtype: str) -> list[str]:
     """
