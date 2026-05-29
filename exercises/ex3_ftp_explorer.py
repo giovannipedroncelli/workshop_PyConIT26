@@ -27,7 +27,7 @@ from io import BytesIO
 # ─── Configuration ────────────────────────────────────────────────────
 
 TARGET = "127.0.0.1"
-FTP_PORT = None  # TODO: Fill in the FTP port you discovered in Exercise 2
+FTP_PORT = 2121  # TODO: Fill in the FTP port you discovered in Exercise 2
 
 def explore_ftp(host: str, port: int) -> str | None:
     """
@@ -37,37 +37,29 @@ def explore_ftp(host: str, port: int) -> str | None:
         The secret string if found, None otherwise.
     """
 
-    # STEP 1: Connect and login anonymously
-    # NOTE: FTP uses two TCP channels.
-    #   - Control channel: commands/replies on the server port (2121 in this lab)
-    #   - Data channel: opened per transfer in passive mode (server high ports)
-    # TODO: Create an FTP object and connect to host:port
-    # TODO: Login with anonymous credentials (user="anonymous", passwd="")
-    # OPTIONAL DEBUG: ftp.set_debuglevel(2) to see PASV/control messages
+    ftp = FTP()
+    ftp.connect(host,port)
+    print(ftp.getwelcome())
+    print(ftp.login(user='anonymous',passwd=""))
+    
+    print("File list")
+    ftp.retrlines("LIST")
 
-    # STEP 2: List the root directory
-    # TODO: Use ftp.retrlines("LIST") or ftp.nlst() to see what files are available
-    # TODO: Print the listing to see what's there
+    buf = BytesIO()
+    ftp.retrbinary("RETR welcome.txt", buf.write)
+    print(buf.getvalue().decode())
 
-    # STEP 3: Read welcome.txt
-    # TODO: Download and print the content of welcome.txt
-    #       where callback writes to a BytesIO buffer
+    ftp.cwd("archive")
+    ftp.retrlines("LIST")
 
-    # STEP 4: Follow the hint and enter archive/
-    # TODO: Use ftp.cwd("archive") and list files.
-
-    # STEP 5: Hunt SECRET_1 using metadata (not brute-force reading all files)
-    # NOTE: some FTP servers require binary mode for SIZE
-    # TODO: Run ftp.voidcmd("TYPE I") right before each ftp.size(...)
-    # TODO: Use ftp.nlst() to collect filenames.
-    # TODO: Filter candidate files (audit_*).
-    # TODO: Use ftp.size(name) and ftp.sendcmd(f"MDTM {name}") to rank candidates.
-    # TODO: Download only the best candidate with retrbinary().
-
-    # STEP 6: Close the connection
-    # TODO: ftp.quit()
-
-    pass  # Remove when you implement
+    candidates = []
+    for name in ftp.nlst():
+        if not name.lower().startswith("audit_"):
+            continue
+        ftp.voidcmd("TYPE I")
+        size = ftp.size(name)
+        mdtm = ftp.sendcmd(f"MDTM {name}")
+        print(mdtm)
 
 # ─── Main ─────────────────────────────────────────────────────────────
 
@@ -84,7 +76,7 @@ def main():
         print("   Save this! You'll need it for the Admin Gate.")
     else:
         print("\n⚠ No secret found. Check your implementation.")
-    print("  Hint: Use welcome.txt + metadata (SIZE/MDTM), not brute-force RETR on every file.")
+    print("  Hint: Use welcome.txt + metadata (SIZE/MDTM). Evaluate newest by MDTM, then apply the <80 bytes filter.")
 
 if __name__ == "__main__":
     main()

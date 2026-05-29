@@ -298,7 +298,9 @@ def main():
                 audit_paths.append(os.path.join(root, filename))
 
     sorted_audit_paths = sorted(audit_paths)
-    now = int(time.time())
+    # Use minute-aligned nanosecond timestamps to avoid per-file second jitter.
+    base_sec = (int(time.time()) // 60) * 60
+    base_ns = base_sec * 1_000_000_000
 
     if len(sorted_audit_paths) >= 2:
         newest_target = sorted_audit_paths[-1]
@@ -312,16 +314,18 @@ def main():
 
         # Older audit files keep distinct older mtimes.
         for index, file_path in enumerate(sorted_audit_paths[:-2]):
-            mtime = now - (len(sorted_audit_paths) - 1 - index) * 300
-            os.utime(file_path, (mtime, mtime))
+            shift_sec = (len(sorted_audit_paths) - 1 - index) * 300
+            mtime_ns = base_ns - (shift_sec * 1_000_000_000)
+            os.utime(file_path, ns=(mtime_ns, mtime_ns))
 
         # Two newest files share the same latest mtime (newest condition alone is ambiguous).
-        os.utime(newest_decoy, (now, now))
-        os.utime(newest_target, (now, now))
+        os.utime(newest_decoy, ns=(base_ns, base_ns))
+        os.utime(newest_target, ns=(base_ns, base_ns))
     else:
         for index, file_path in enumerate(sorted_audit_paths):
-            mtime = now - (len(sorted_audit_paths) - 1 - index) * 300
-            os.utime(file_path, (mtime, mtime))
+            shift_sec = (len(sorted_audit_paths) - 1 - index) * 300
+            mtime_ns = base_ns - (shift_sec * 1_000_000_000)
+            os.utime(file_path, ns=(mtime_ns, mtime_ns))
 
     os.chdir(tmpdir)
     services_dir = os.path.join(tmpdir, "services")
